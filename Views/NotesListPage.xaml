@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:SampleMauiMvvmApp.Models"
+             xmlns:viewModels="clr-namespace:SampleMauiMvvmApp.ViewModels"
+             x:DataType="viewModels:NotesViewModel"
+             x:Class="SampleMauiMvvmApp.Views.NotesListPage"
+             Title="My Notes">
+    <Grid ColumnDefinitions="*"
+          Grid.RowDefinitions="80,*">
+        <StackLayout >
+            <Button Grid.Row="0" Text="+ Add new note" Command="{Binding AddUpdateNoteCommand}" BackgroundColor="Orange" FontAttributes="Bold" HorizontalOptions="End" Margin="15" />
+        </StackLayout>
+        
+
+        <ScrollView  Grid.Row="1">
+            <StackLayout Margin="15">
+
+
+
+                <CollectionView ItemsSource="{Binding Notes}" Margin="10">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Notes">
+                            <SwipeView >
+                                <SwipeView.LeftItems>
+                                    <SwipeItems>
+                                        <SwipeItemView>
+                                            <VerticalStackLayout  BackgroundColor="LightBlue">
+                                                <Label Text="Edit" 
+                                           HorizontalTextAlignment="Center" 
+                                           VerticalTextAlignment="Center" FontAttributes="Bold" TextColor="White" />
+                                            </VerticalStackLayout>
+                                        </SwipeItemView>
+                                        <SwipeItemView>
+                                            <VerticalStackLayout BackgroundColor="Red">
+                                                <Label Text="Delete" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontAttributes="Bold" TextColor="White" />
+                                            </VerticalStackLayout>
+                                        </SwipeItemView>
+                                        <!--<SwipeItem Text="Edit" IconImageSource="dotnet_bot" BackgroundColor="LightBlue" 
+                                       CommandParameter="{Binding .}"
+                                       Command="{Binding Source={x:RelativeSource AncestorType={x:Type viewModels:StudentListPageViewModel}},Path=EditStudentCommand}" />
+                            <SwipeItem Text="Delete" IconImageSource="dotnet_bot" BackgroundColor="Red"  CommandParameter="{Binding .}"
+                                       Command="{Binding Source={x:RelativeSource AncestorType={x:Type viewModels:StudentListPageViewModel}},Path=DeleteStudentCommand}" />-->
+                                    </SwipeItems>
+                                </SwipeView.LeftItems>
+                                <StackLayout Padding="2">
+                                    <Frame Margin="10"  CornerRadius="10" BorderColor="Gray" BackgroundColor="LightGoldenrodYellow">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Row 1: Labels -->
+                                            <Label Grid.Row="0" Grid.ColumnSpan="3" FontSize="Large" Text="{Binding NoteTitle}" FontAttributes="Bold" TextColor="Black" />
+
+
+
+                                            <!-- Row 2: Values -->
+                                            <Label Grid.Row="1" Grid.ColumnSpan="3" Text="{Binding NoteContent}" FontSize="Small" TextColor="DarkSlateGray" />
+                                            <Label Grid.Row="3" Grid.Column="3" Text="{Binding Date}" FontSize="Small" TextColor="Gray" VerticalOptions="End" HorizontalOptions="End" />
+                                        </Grid>
+
+                                        <!-- Tap Gesture -->
+                                        <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={x:RelativeSource AncestorType={x:Type viewModels:NotesViewModel}},Path=DisplayActionCommand}"
+                                    CommandParameter="{Binding .}" />
+                                        </Frame.GestureRecognizers>
+                                    </Frame>
+                                </StackLayout>
+
+
+
+
+                            </SwipeView>
+
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <StackLayout Orientation="Vertical" HorizontalOptions="CenterAndExpand" VerticalOptions="Fill">
+                            <Image Source="no_notes_icon.png" WidthRequest="100" HeightRequest="100" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
+                            <Label FontAttributes="Bold" Text="You do not have NOTES!" FontSize="14"  />
+                        </StackLayout>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+    
+</ContentPage>

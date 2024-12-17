@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="SampleMauiMvvmApp.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:SampleMauiMvvmApp.Views"
+    xmlns:view="clr-namespace:SampleMauiMvvmApp.Views"
+    xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+    Shell.FlyoutBehavior="Flyout"
+    >
+
+    <ShellContent
+    ContentTemplate="{DataTemplate local:LoadingPage}"
+    Route="MenuPage" FlyoutItemIsVisible="False"/>
+
+    <FlyoutItem Route="MonthCustomerTabPage" FlyoutDisplayOptions="AsMultipleItems">
+
+            <ShellContent Title="Not Captured" Icon="water_tap_thick.png" ContentTemplate="{DataTemplate view:UncapturedReadingsPage}"></ShellContent>
+            <ShellContent Title="Captured" Icon="data_entry_icon.jpg" ContentTemplate="{DataTemplate view:CapturedReadingsPage}"></ShellContent>
+        <ShellContent Title="Sync" Icon="cloud_sync_icon.png" ContentTemplate="{DataTemplate view:MonthPage}" ></ShellContent>
+            <ShellContent Title="Locations" Icon="uncapturedlocation_logo.png" ContentTemplate="{DataTemplate view:LocationPage}" ></ShellContent>
+
+        
+    </FlyoutItem>
+
+
+    <FlyoutItem Route="AddNewFlyoutItem" Title="App Menu Options" Icon="menu_options_icon.png" >
+        <ShellContent ContentTemplate="{DataTemplate view:MenuPage}"></ShellContent>
+    </FlyoutItem>
+
+
+
+
+    <Shell.FlyoutHeader>
+        <StackLayout Padding="20">
+            <Image Source="user_profile.png" HeightRequest="150" WidthRequest="150" />
+            <StackLayout Orientation="Vertical" Padding="10" >
+                <VerticalStackLayout HorizontalOptions="Center" Padding="10">
+                    <Label x:Name="lblUsername" FontSize="Subtitle"  FontAttributes="Bold" TextColor="Blue"></Label>
+                    <Label x:Name="lblUserSite" FontSize="Subtitle"  FontAttributes="Bold" TextColor="Grey"></Label>
+
+                </VerticalStackLayout>
+            </StackLayout>
+        </StackLayout>
+    </Shell.FlyoutHeader>
+
+
+
+</Shell>

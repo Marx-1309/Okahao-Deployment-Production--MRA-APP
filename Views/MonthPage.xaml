@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+	xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+             x:Class="SampleMauiMvvmApp.Views.MonthPage"
+	xmlns:model="clr-namespace:SampleMauiMvvmApp.Models"
+	xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+             x:DataType="viewmodel:MonthViewModel">
+    <Grid
+       ColumnDefinitions="*,*"
+        ColumnSpacing="1"
+        RowDefinitions="*,Auto"
+        RowSpacing="0"
+        Padding="5"
+         BackgroundColor="LightGrey">
+        <RefreshView
+            Grid.ColumnSpan="2"
+            Command="{Binding GetMonthsCommand}"
+            IsRefreshing="{Binding IsRefreshing}">
+            <ContentView>
+                <CollectionView
+                    ItemsSource="{Binding Months}"
+                    SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:Month">
+                            <Grid Padding="1" HorizontalOptions="Fill">
+                                <Frame HeightRequest="120" CornerRadius="10">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MonthViewModel}}, Path=GoToListOfReadingsByMonthCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Frame.GestureRecognizers>
+
+                                    <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="*">
+                                        <!-- Image at the left edge -->
+                                        <Image
+                                            HorizontalOptions="Start"
+                                            Aspect="AspectFill"
+                                            HeightRequest="100"
+                                            Source="month_icon.png"
+                                            WidthRequest="100" />
+
+                                        <!-- Adjusted VerticalStackLayout without padding -->
+                                        <VerticalStackLayout
+                                            Padding="10"
+                                            VerticalOptions="Center"
+                                            Grid.Column="1">
+                                            <Label Style="{StaticResource LargeLabel}" Text="{Binding MonthName}" />
+                                            <!--<Label Style="{StaticResource MediumLabel}" Text="{Binding Year}" TextColor="Gray" />-->
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Grid.Column="2" IsVisible="{Binding IsActive}">
+                                            <skia:SKLottieView
+                                                    Source="active_animation.json"
+                                                    RepeatCount="-1"
+                                                    SemanticProperties.Description="Be patient while we load your data!"
+                                                    HeightRequest="80"
+                                                    WidthRequest="80"
+                                                    />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Frame>
+                            </Grid>
+
+
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ContentView>
+        </RefreshView>
+        <!--<Button
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="8"
+             CornerRadius="0"
+            Command="{Binding GetMonthsCommand}"
+            IsEnabled="{Binding IsNotBusy}"
+            Text="Get Month" /><Button
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="8"
+             CornerRadius="0"
+             Command="{Binding GoToAllCustomersCommand}"
+            IsEnabled="{Binding IsNotBusy}"
+            Text="All Customers" />-->
+        <ActivityIndicator
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="2"
+            HorizontalOptions="Fill"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            Color="{StaticResource Primary}"
+            VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

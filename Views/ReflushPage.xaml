@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:SampleMauiMvvmApp.Models"
+             xmlns:viewModels="clr-namespace:SampleMauiMvvmApp.ViewModels"
+             x:DataType="viewModels:ReadingViewModel"
+             x:Class="SampleMauiMvvmApp.Views.ReflushPage"
+             Title="Recycle all reading">
+
+    <!-- ToolbarItem to add the reset_icon to the top-right corner of the NavBar -->
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            IconImageSource="reset2_icon.png"
+            Command="{Binding ResetReadingCommand}" 
+            Order="Primary" 
+            Priority="0" />
+    </ContentPage.ToolbarItems>
+
+    <Grid
+    ColumnDefinitions="*,*"
+    ColumnSpacing="5"
+    RowDefinitions="*,Auto"
+    RowSpacing="0"
+    BackgroundColor="White">
+
+        <ScrollView Grid.ColumnSpan="2">
+            <StackLayout
+                Grid.ColumnSpan="2"
+                Padding="15,10,15,50">
+
+                <!-- Instructions Section -->
+
+                <Label Text="Before Invoking the Data Synchronization"
+                       FontAttributes="Bold"
+                       FontSize="Large"
+                       TextColor="#333333"
+                       Margin="0,0,0,10"/>
+
+
+<Label Text="Initialization"
+FontAttributes="Bold"
+FontSize="Medium"
+TextColor="#555555"
+Margin="0,0,0,5"/>
+                <Label Text="No manual initialization is required. The synchronization process is done by the app."
+FontSize="Small"
+TextColor="#777777"
+Margin="0,0,0,10"/>
+
+                <Label Text="Check Internet Connection:And Make sure you are connected the office WiFi ONLY"
+FontAttributes="Bold"
+FontSize="Medium"
+TextColor="#555555"
+Margin="0,0,0,5"/>
+                <Label Text="Ensure that your device is connected to the internet before initiating the synchronization process. The app checks for internet connectivity to proceed with data synchronization."
+FontSize="Small"
+TextColor="#777777"
+Margin="0,0,0,20"/>
+
+                <Label Text="Initiating Data Synchronization"
+FontAttributes="Bold"
+FontSize="Medium"
+TextColor="#555555"
+Margin="0,0,0,5"/>
+                <Label Text="The data synchronization process is initiated automatically at appropriate intervals or events.
+          You do not need to trigger it manually.During this process all the captured current month readings will be synced for you.
+          This process will restore current readings data with data from the server ,including the data synced by other meter readers,if exists any! "
+FontSize="Small"
+TextColor="#777777"
+Margin="0,0,0,20"/>
+
+                <Label Text="During the Synchronization Process"
+FontAttributes="Bold"
+FontSize="Medium"
+TextColor="#555555"
+Margin="0,0,0,5"/>
+                <Label Text="Connectivity Alert:"
+FontAttributes="Bold"
+FontSize="Small"
+TextColor="#777777"
+Margin="0,0,0,5"/>
+                <Label Text="If your device is not connected to the internet during synchronization, an alert will be displayed. Please check your internet connection and wait for synchronization to resume automatically."
+FontSize="Small"
+TextColor="#777777"
+Margin="0,0,0,5"/>
+
+                <Label Text="Data Sync Alert:"
+FontAttributes="Bold"
+FontSize="Small"
+TextColor="#777777"
+Margin="0,0,0,5"/>
+                <Label Text="If new data is found during the synchronization process, you will receive alerts notifying you of the data synchronization. 
+          These alerts keep you informed about the ongoing synchronization status."
+FontSize="Small"
+TextColor="#777777"
+Margin="0,0,0,5"/>
+
+                <Label Text="Observing Update Status:"
+FontAttributes="Bold"
+FontSize="Small"
+TextColor="#777777"
+Margin="0,0,0,5"/>
+                <Label Text="Keep an eye on alerts or messages displayed by the application. Successful synchronization will be indicated through relevant alerts."
+FontSize="Small"
+TextColor="#777777"
+Margin="0,0,0,20"/>
+
+            </StackLayout>
+        </ScrollView>
+
+        <Button
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            Margin="8"
+            CornerRadius="10"
+            BackgroundColor="Red"
+            FontAttributes="Bold"
+            Text="Recycle readings"
+            Command="{Binding ReflushDataCommand}"/>
+
+        <ActivityIndicator
+            IsVisible="{Binding IsBusy}"
+            IsRunning="{Binding IsBusy}"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="CenterAndExpand"
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="2">
+        </ActivityIndicator>
+    </Grid>
+</ContentPage>

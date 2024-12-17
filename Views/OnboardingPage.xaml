@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SampleMauiMvvmApp.Views.OnboardingPage"
+             Title="OnboardingPage"
+             Shell.NavBarIsVisible="False"
+             Shell.FlyoutBehavior="Disabled">
+    <Grid RowDefinitions="*, *">
+        <Border
+            Grid.Row="0"
+            HeightRequest="300"
+            HorizontalOptions="Center"
+            Stroke="{StaticResource Primary}"
+            StrokeShape="RoundRectangle 150"
+            StrokeThickness="10"
+            VerticalOptions="Center"
+            WidthRequest="300"
+            IsVisible="{OnPlatform False, Android=True}">
+            <Image
+                Aspect="AspectFill"
+                HeightRequest="300"
+                HorizontalOptions="Center"
+                Source="onboarding_icon.png"
+                VerticalOptions="Center"
+                WidthRequest="300" />
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource Primary}" Radius="250" />
+            </Border.Shadow>
+        </Border>
+        <Frame Grid.Row="0"
+            HeightRequest="300"
+            BorderColor="{StaticResource Primary}"
+            CornerRadius="150"
+            WidthRequest="300"
+               IsClippedToBounds="True"
+               IsVisible="{OnPlatform False, iOS=True}">
+            <Image
+                Aspect="AspectFill"
+                HeightRequest="300"
+                HorizontalOptions="Center"
+                Source="img_22.jpg"
+                VerticalOptions="Center"
+                WidthRequest="300" />
+            <Frame.Shadow>
+                <Shadow Brush="{StaticResource Primary}" Radius="250" />
+            </Frame.Shadow>
+        </Frame>
+        <Grid
+            Grid.Row="1"
+            Padding="15"
+            RowDefinitions="*, Auto">
+            <VerticalStackLayout Grid.Row="0" Spacing="30">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="40"
+                    LineHeight="1.2"
+                    Text="Find your favorite friend close to you" />
+                <Label
+                    FontSize="18"
+                    HorizontalTextAlignment="Center"
+                    LineHeight="1.3"
+                    Text="Find your new best friend at our store! We have a wide range of selected lovable and cute pets, ready for adoption." />
+            </VerticalStackLayout>
+            <Button
+                Grid.Row="1"
+                Clicked="Button_Clicked"
+                Text="Explore" />
+        </Grid>
+    </Grid>
+</ContentPage>

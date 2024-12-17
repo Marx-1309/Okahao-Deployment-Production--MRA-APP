@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:SampleMauiMvvmApp.Models"
+             xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+             x:Class="SampleMauiMvvmApp.Views.ListOfReadingByMonthPage"
+             Title="{Binding MyTitle}"
+             x:DataType="viewmodel:MonthViewModel">
+    <Grid ColumnDefinitions="*,*"
+          RowDefinitions="*,Auto"
+          RowSpacing="0"
+          Padding="5,5,5,5"
+          BackgroundColor="LightGrey">
+        <RefreshView Grid.ColumnSpan="2" IsRefreshing="{Binding IsRefreshing}">
+            <CollectionView ItemsSource="{Binding listReadings}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:Reading">
+                        
+
+                            
+                            <Frame HeightRequest="120"  Padding="5,2,5,2" >
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MonthViewModel}}, Path=GoToCustomerDetailsCommand}" CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+                                <Grid Grid.Column="0" ColumnDefinitions="56,*,*" VerticalOptions="Center">
+                                
+                                    <Image Source="green_dot.png" IsVisible="{Binding ReadingSync}" HeightRequest="80" VerticalOptions="Center" />
+                                    <Image Source="blue_dot.png" IsVisible="{Binding ReadingTaken}" HeightRequest="50" VerticalOptions="Center" />
+                                
+                                <VerticalStackLayout Grid.Column="1" Padding="10,0,5,0" Spacing="0">
+                                        <Label Text="Customer Number" TextColor="Gray" Margin="0" />
+                                        <Label  FontSize="Subtitle" Text="{Binding CUSTOMER_NUMBER}" Margin="0,3,0,0" />
+                                        <Label Style="{StaticResource SmallLabel}" FontAttributes="Bold" TextColor="Gray" Text="{Binding CUSTOMER_NAME}" Margin="0,3,0,0" />
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="2" Padding="0,0,5,0" Spacing="0">
+                                        <Label Text="Current Reading" TextColor="Gray" Margin="0" />
+                                        <Label Style="{StaticResource LargeLabel}" TextColor="Blue" Text="{Binding CURRENT_READING}" Margin="0,3,0,0" />
+                                        <Label Style="{StaticResource SmallLabel}" TextColor="Green" Text="{Binding AREA}" Margin="0,3,0,0" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
+
+
+                        
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+        <Button Grid.Row="1" Grid.Column="0" CornerRadius="5" Margin="10" Text="Go Back"  Command="{Binding GoBackCommand}" />
+        <Button Margin="10" Grid.Row="1" Grid.Column="1" CornerRadius="5" Command="{Binding SyncByMonthIdCommand}" BackgroundColor="White" FontFamily="Serif" TextColor="Blue" Text="Sync Now" />
+        <ActivityIndicator IsRunning="{Binding IsBusy}" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand" Grid.RowSpan="2" Grid.ColumnSpan="2" />
+    </Grid>
+</ContentPage>

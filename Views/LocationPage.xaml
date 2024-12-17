@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+	xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SampleMauiMvvmApp.Views.LocationPage"
+	xmlns:model="clr-namespace:SampleMauiMvvmApp.Models"
+	xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+             x:DataType="viewmodel:ReadingViewModel"
+    Title="My Locations">
+    <Grid
+    ColumnDefinitions="*,*"
+    ColumnSpacing="5"
+    RowDefinitions="*,Auto"
+    RowSpacing="0">
+        <RefreshView
+        Grid.ColumnSpan="2"
+        Command="{Binding GetLocationsCommand}"
+        IsRefreshing="{Binding IsRefreshing}">
+            <ContentView>
+                <CollectionView
+                    ItemsSource="{Binding AllLocation}"
+                    SelectionMode="None">
+                    <CollectionView.EmptyView>
+                        <StackLayout Padding="100">
+                            <Image
+                                HorizontalOptions="Center"
+                                HeightRequest="160"
+                                WidthRequest="160"
+                                Source="uncapturedlocation_logo.png"
+                                VerticalOptions="Center" />
+                        </StackLayout>
+                    </CollectionView.EmptyView>
+                    <!--<CollectionView.ItemsLayout>
+                        <GridItemsLayout  Orientation="Horizontal" Span="3"/>
+                    </CollectionView.ItemsLayout>-->
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:LocationReadings">
+                            <Grid Padding="5" HorizontalOptions="Fill">
+                                <Frame HeightRequest="100" Padding="2,0,2,0" >
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ReadingViewModel}}, Path=GoToListOfUncapturedReadingsByAreaCommand}"
+                                        CommandParameter="{Binding .}"/>
+                                    </Frame.GestureRecognizers>
+                                    <Grid Padding="0" ColumnDefinitions="100,200,Auto">
+                                        <Image
+                                            Aspect="AspectFill"
+                                            HeightRequest="75"
+                                            Source="uncapturedlocation_logo.png"
+                                            WidthRequest="75" />
+                                        <VerticalStackLayout
+                                            VerticalOptions="Center"
+                                            Grid.Column="1"
+                                            Padding="10">
+                                            <Label FontSize="Large" FontAttributes="Bold" Text="{Binding AREANAME}" />
+
+                                        </VerticalStackLayout>
+                                        <StackLayout Grid.Column="2">
+                                            <Label FontSize="Large" FontAttributes="Bold" HorizontalOptions="StartAndExpand" Padding="0,10" TextColor="Red" Text="{Binding NumberOfReadings}" />
+                                        </StackLayout>
+                                        
+                                    </Grid>
+                                </Frame>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ContentView>
+        </RefreshView>
+        
+        <ActivityIndicator
+        Grid.RowSpan="2"
+        Grid.ColumnSpan="2"
+        HorizontalOptions="Fill"
+        IsRunning="{Binding IsBusy}"
+        IsVisible="{Binding IsBusy}"
+        Color="{StaticResource Primary}"
+        VerticalOptions="Center" />
+    </Grid>
+
+
+
+
+</ContentPage>

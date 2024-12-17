@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SampleMauiMvvmApp.Views.SecurityPages.LoginPage"
+               xmlns:viewmodel ="clr-namespace:SampleMauiMvvmApp.ViewModels"
+             x:DataType ="viewmodel:LoginViewModel"
+             Shell.FlyoutBehavior="Disabled"
+             Shell.NavBarIsVisible="False"
+             BackgroundImageSource="Resources/loading_wallpaper.jpg">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsEnabled="False" IsVisible="False"></BackButtonBehavior>
+    </Shell.BackButtonBehavior>
+
+    <Grid BackgroundColor="#FAFAFA">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Image Source="loading_wallpaper.jpg" Aspect="AspectFill" />
+        
+
+        <!-- App Logo -->
+        <Image Source="kinetic_logo.png"
+               Aspect="AspectFit"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               Grid.Row="0"/>
+
+        <VerticalStackLayout Spacing="10" Grid.Row="1" >
+            <Label Text="Welcome!" FontSize="28" TextColor="Gray" HorizontalTextAlignment="Center" />
+            <Label Text="Login to your account" FontSize="18" TextColor="Gray" 
+                   HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+
+        <StackLayout Grid.Row="4" HorizontalOptions="FillAndExpand" Padding="20" Spacing="20" >
+            <Frame CornerRadius="10" >
+            <Entry Placeholder="Username" PlaceholderColor="DimGray" Keyboard="Email" Text="{Binding Username}" TextColor="Black"  />
+            </Frame>
+            <Frame CornerRadius="10">
+            <Entry Placeholder="Password" PlaceholderColor="DimGray" IsPassword="True" Text="{Binding Password}" />
+            </Frame>
+            <Button Text="Login" BackgroundColor="#2196F3" TextColor="White" Command="{Binding LoginCommand}" />
+        </StackLayout>
+            
+        <ActivityIndicator
+            Grid.Row="2"
+            HorizontalOptions="Fill"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            Color="{StaticResource Primary}"
+            VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

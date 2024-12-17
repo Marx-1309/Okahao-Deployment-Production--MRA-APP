@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SampleMauiMvvmApp.Views.ExceptionReadingListPage"
+             xmlns:model="clr-namespace:SampleMauiMvvmApp.Models"
+             xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+             x:DataType="viewmodel:ReadingViewModel"
+             Title="Abnormal Readings">
+
+    <Grid ColumnDefinitions="*,*,*"
+      ColumnSpacing="5"
+      RowSpacing="0"
+      BackgroundColor="LightGrey">
+        <RefreshView Grid.ColumnSpan="3" IsEnabled="False" Command="{Binding GoToExceptionListCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding exceptionReadings}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:Reading">
+
+                        <Frame BackgroundColor="PapayaWhip" HeightRequest="125" CornerRadius="0" Padding="0">
+                            <!--<Frame.GestureRecognizers>
+        <TapGestureRecognizer
+             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ReadingViewModel}}, Path=GoToCustomerDetailsCommand}"
+             CommandParameter="{Binding .}">
+        </TapGestureRecognizer>
+    </Frame.GestureRecognizers>-->
+
+                            <Grid Grid.Column="0" ColumnDefinitions="*,*,*" RowDefinitions="*,*,Auto" VerticalOptions="Center" Padding="0">
+                                <Label Text="Usage" TextColor="Grey" HorizontalOptions="Center"/>
+                                <VerticalStackLayout Grid.Column="0" Grid.RowSpan="3" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label Grid.RowSpan="3" FontSize="30" FontAttributes="Bold" TextColor="Red" Text="{Binding PercentageChange}"/>
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="1" Grid.RowSpan="3" >
+                                    <Label Text="Customer" TextColor="Grey" Margin="0" />
+                                    <Label Style="{StaticResource SmallLabel}" TextColor="Black" Text="{Binding ERF_NUMBER}" />
+                                    <Label Style="{StaticResource SmallLabel}" FontAttributes="Bold" TextColor="Black" Text="{Binding CUSTOMER_NAME}" />
+                                    <Label Style="{StaticResource MediumLabel}" FontAttributes="Bold" TextColor="CornflowerBlue" Text="{Binding METER_NUMBER}" />
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="3" Grid.RowSpan="3" >
+                                    <Label Text="Taken by" TextColor="Grey"/>
+                                    <Label Style="{StaticResource MediumLabel}" TextColor="Red" Text="{Binding METER_READER, StringFormat=' {0}'}"  />
+                                    <Label Style="{StaticResource SmallLabel}" TextColor="Red" Text="{Binding ReadingDate, StringFormat=' {0}'}"  />
+                                    <Label FontSize="Subtitle" Text="{Binding AREA}"  />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <StackLayout Orientation="Vertical" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                        <Image Source="nodata_icon.png" WidthRequest="50" HeightRequest="50" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
+                        <Label Text="No Data Found, Restart the App" FontSize="14" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Margin="5,10" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+        <ActivityIndicator
+IsVisible="{Binding IsBusy}"
+IsRunning="{Binding IsBusy}"
+HorizontalOptions="FillAndExpand"
+VerticalOptions="CenterAndExpand"
+Grid.RowSpan="2"
+Grid.ColumnSpan="2"
+></ActivityIndicator>
+    </Grid>
+
+</ContentPage>

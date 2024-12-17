@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="SampleMauiMvvmApp.Views.CustomerDetailPage"
+    xmlns:model="clr-namespace:SampleMauiMvvmApp.Models"
+    xmlns:modelwrapper="clr-namespace:SampleMauiMvvmApp.ModelWrappers"
+    xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+    x:DataType="viewmodel:CustomerDetailViewModel"
+    Title="{Binding Title}">
+
+    <Grid
+    Padding="2,0,2,5"
+    ColumnDefinitions="*"
+    ColumnSpacing="0"
+    Margin="10"
+    RowDefinitions="Auto,*,Auto">
+
+        <!-- Header Section -->
+        <VerticalStackLayout Grid.Row="0">
+            <Frame BackgroundColor="White" CornerRadius="10" Padding="15" Margin="10">
+                <VerticalStackLayout>
+                    <StackLayout Orientation="Vertical" Padding="10,10,10,10" HorizontalOptions="FillAndExpand">
+                        <HorizontalStackLayout>
+                            <Label Padding="0,0,10,0" FontSize="20" TextColor="Grey" FontAttributes="Bold" Text="CUSTOMER INFO" />
+                            <Image HeightRequest="20" WidthRequest="20" VerticalOptions="Center" HorizontalOptions="EndAndExpand" Source="info_icon.jpg" />
+                        </HorizontalStackLayout>
+
+                        <!-- Area Information -->
+                        <Label FontSize="12" TextColor="Grey" FontAttributes="Italic,Bold" Text="AREA" />
+                        <HorizontalStackLayout>
+                            <Label Padding="0,0,40,0" FontSize="22" Text="{Binding CustStateErf}" TextColor="CornflowerBlue" FontAttributes="Bold" />
+                            <Border Style="{StaticResource iconBtnContainer}">
+                                <Image VerticalOptions="Center" HeightRequest="40" WidthRequest="40" Source="pencil_icon.jpg" />
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding UpdateCustomerLocationCommand}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </HorizontalStackLayout>
+
+                        <!-- Phone Information -->
+                        <Label FontSize="12" TextColor="Grey" FontAttributes="Italic,Bold" Text="Phone NO" />
+                        <Label FontSize="15" FontAttributes="Bold" TextColor="CornflowerBlue" Text="{Binding Custphone1}" />
+
+                        <!-- Meter Number -->
+                        <Label FontSize="12" TextColor="Grey" FontAttributes="Italic,Bold" Text="METER NO" />
+                        <HorizontalStackLayout>
+                            <Label FontSize="22" FontAttributes="Bold" Text="{Binding MeterNumber}" TextColor="CornflowerBlue" />
+                            <Border Style="{StaticResource iconBtnContainer}">
+                                <Image VerticalOptions="Center" HeightRequest="40" WidthRequest="40" Source="pencil_icon.jpg" />
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding UpdateCustomerMeterNoCommand}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </HorizontalStackLayout>
+
+                        <!-- Readings -->
+                        <Label FontSize="12" TextColor="Grey" FontAttributes="Italic,Bold" Text="PREVIOUS READING" />
+                        <Label FontSize="40" FontAttributes="Bold" Text="{Binding CustPrevReading}" TextColor="Blue" />
+                        <Label FontSize="12" TextColor="Grey" FontAttributes="Italic,Bold" Text="CURRENT READING" />
+                        <Label FontSize="40" FontAttributes="Bold" Text="{Binding CustCurrentReading}" TextColor="Blue" />
+                        <Label FontSize="12" IsVisible="{Binding IsCurrentReading}" TextColor="Grey" FontAttributes="Italic,Bold" Text="Total Usage" />
+                        <Label FontSize="22" IsVisible="{Binding IsCurrentReading}" FontAttributes="Bold" Text="{Binding TotalUsage}" TextColor="Red" />
+                    </StackLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+
+        <!-- Scrollable Content -->
+        <ScrollView Grid.Row="1">
+            <StackLayout Spacing="10" Padding="10">
+                <Entry
+                    BackgroundColor="LightGrey"
+                    Placeholder="Enter new reading here"
+                    HorizontalOptions="FillAndExpand"
+                    IsTextPredictionEnabled="True"
+                    IsSpellCheckEnabled="True"
+                    Text="{Binding VmReading.C_reading}"
+                    Keyboard="Numeric"
+                    Margin="15" />      
+
+
+                <toolkit:Expander>
+                    <toolkit:Expander.Header>
+                        <Label HorizontalOptions="Center" Text="Leave a comment..." FontAttributes="Italic" FontSize="Medium"/>
+                    </toolkit:Expander.Header>
+                    <StackLayout Padding="10" Spacing="5">
+                        <Entry BackgroundColor="WhiteSmoke" Placeholder="Enter comment here..." WidthRequest="250" HeightRequest="75" Text="{Binding VmReading.Comment}" IsTextPredictionEnabled="True" IsSpellCheckEnabled="True" />
+                        <Border Style="{StaticResource iconBtnContainer}">
+                            <Image Source="camera_icon.jpg" />
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding TakePhotoClickedCommand}" />
+                            </Border.GestureRecognizers>
+                        </Border>
+                    </StackLayout>
+                </toolkit:Expander>
+
+                <Button
+                CornerRadius="20"
+                WidthRequest="350"
+                HeightRequest="60"
+                FontAttributes="Bold"
+                Text="Create New Reading"
+                FontAutoScalingEnabled="True"
+                Command="{Binding CreateReadingCommand}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsUpdate}" Value="true">
+                            <Setter Property="Text" Value="Update Reading" />
+                            <Setter Property="BackgroundColor" Value="OrangeRed" />
+                            <Setter Property="TextColor" Value="White" />
+                            <Setter Property="FontAttributes" Value="Bold" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </StackLayout>
+        </ScrollView>
+
+        <Button Grid.Row="2" CornerRadius="20" Text="Go Back" Command="{Binding GoBackCommand}" />
+    </Grid>
+
+</ContentPage>
+

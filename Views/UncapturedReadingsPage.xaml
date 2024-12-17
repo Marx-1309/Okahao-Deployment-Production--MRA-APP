@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:model="clr-namespace:SampleMauiMvvmApp.Models"
+             xmlns:viewmodel="clr-namespace:SampleMauiMvvmApp.ViewModels"
+             xmlns:searchHandlers="clr-namespace:SampleMauiMvvmApp.SearchHandlers"
+             x:Class="SampleMauiMvvmApp.Views.UncapturedReadingsPage"
+             Title="{Binding UncapturedReadingsCount}"
+             x:DataType="viewmodel:ReadingViewModel">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsEnabled="False" IsVisible="False"></BackButtonBehavior>
+    </Shell.BackButtonBehavior>
+
+    <Shell.SearchHandler>
+        <searchHandlers:CustomerSearchHandler 
+            Placeholder="Search By Erf,Name or Meter No"
+            ShowsResults="True"
+            QueryIcon="search"
+            ClearIcon="clear"
+            NavigationRoute="CustomerDetailPage"
+            Readings="{x:Static viewmodel:ReadingViewModel.ReadingsListForSearch}">
+            <searchHandlers:CustomerSearchHandler.ItemTemplate>
+                <DataTemplate x:DataType="model:Reading">
+                    <Grid Margin="5" RowDefinitions="Auto" ColumnDefinitions="40,Auto">
+                        <Image Grid.Row="0" HorizontalOptions="Start" Grid.Column="0" Source="user" HeightRequest="100" WidthRequest="50" />
+                        <Label Grid.Row="0" HorizontalOptions="Start" Grid.Column="1" 
+                               Text="{Binding SearchBarReadingInfo}" 
+                               FontSize="18" 
+                               HorizontalTextAlignment="Start" 
+                               VerticalTextAlignment="Start"/>
+                    </Grid>
+                </DataTemplate>
+            </searchHandlers:CustomerSearchHandler.ItemTemplate>
+        </searchHandlers:CustomerSearchHandler>
+    </Shell.SearchHandler>
+    <!-- BoxView added here -->
+    
+    <Grid ColumnDefinitions="*"
+          ColumnSpacing="5"
+          RowSpacing="0"
+          BackgroundColor="LightGrey">
+
+        <CollectionView ItemsSource="{Binding AllReadings}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:Reading">
+                    <Frame HeightRequest="120" CornerRadius="0" Padding="5,2,5,2">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ReadingViewModel}}, Path=GoToCustomerDetailsCommand}"
+                                CommandParameter="{Binding .}">
+                            </TapGestureRecognizer>
+                        </Frame.GestureRecognizers>
+
+                        <Grid Grid.Column="0" ColumnDefinitions="60,*,*" VerticalOptions="Center">
+                            <Image Source="red_dot3.png" IsVisible="{Binding ReadingNotTaken}" HeightRequest="50" />
+                            <Image Source="blue_dot.png" IsVisible="{Binding ReadingTaken}" HeightRequest="50" />
+                            <VerticalStackLayout Grid.Column="1" Padding="0,0,0,0" Spacing="0">
+                                <Label Text="Customer Erf" TextColor="Gray" Margin="0" />
+                                <Label Style="{StaticResource MediumLabel}" TextColor="Red" Text="{Binding ERF_NUMBER}" Margin="0,3,0,0" />
+                                <HorizontalStackLayout>
+                                    <Label Style="{StaticResource SmallLabel}" FontAttributes="Bold" TextColor="Black" Text="{Binding METER_NUMBER}" Margin="0,3,0,0" />
+                                </HorizontalStackLayout>
+                                <Label Style="{StaticResource SmallLabel}" TextColor="Gray" Text="{Binding CUSTOMER_NAME}" Margin="0,3,0,0" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="2" Padding="0,0,5,0" Spacing="5">
+                                <Label Text="Current Reading" TextColor="Gray" Margin="0" />
+                                <Label Style="{StaticResource LargeLabel}" TextColor="Red" Text="{Binding CURRENT_READING, StringFormat=' {0}'}" Margin="0,3,0,0" />
+                                <Label FontSize="Subtitle" Text="{Binding AREA}" Margin="0,3,0,0" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <StackLayout Orientation="Vertical" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                    <Image Source="nodata_icon.png" WidthRequest="50" HeightRequest="50" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
+                    <Label Text="No Data Found, Restart the App" FontSize="14" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Margin="5,10" />
+                </StackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <ActivityIndicator
+            IsVisible="{Binding IsBusy}"
+            IsRunning="{Binding IsBusy}"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="CenterAndExpand"
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="2">
+        </ActivityIndicator>
+
+        
+    </Grid>
+</ContentPage>
+

@@ -393,9 +393,9 @@ namespace SampleMauiMvvmApp.ViewModels
         }
 
         #region CustomerLocations
-        //string items1 = "ONESI";
+        string items1 = "ONESI";
         //string items2 = "OKALONGO";
-        string items3 = "OGONGO";
+        //string items3 = "OGONGO";
         string items4 = "UNCLASSIFIED";
         //string items1 = "EXTENSION 1";
         //string items2 = "EXTENSION 2";
@@ -446,7 +446,7 @@ namespace SampleMauiMvvmApp.ViewModels
             while (!hasLocation)
             {
                 var userLocation = await Shell.Current.DisplayActionSheet(
-                    "Select Location",null,null,items3, items4
+                    "Select Location",null,null,items1, items4
                     );
 
                 if (!string.IsNullOrEmpty(userLocation) &&
@@ -522,7 +522,7 @@ namespace SampleMauiMvvmApp.ViewModels
                 if (cstObj1 != null)
                 {
                     var userLocation = await Shell.Current.DisplayActionSheet(
-                        "Select Location", null, null, items3,items4
+                        "Select Location", null, null, items1,items4
                     );
 
                     if (!string.IsNullOrEmpty(userLocation))

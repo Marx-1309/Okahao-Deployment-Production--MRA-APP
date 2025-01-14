@@ -63,7 +63,7 @@ namespace SampleMauiMvvmApp.Services
                 }
                 //Check if all the existing readings are synced!
 
-                await _readingExportService.ScanForNewItems();
+                //await _readingExportService.ScanForNewItems();
                 //await _readingExportService.FlushAndSeed();
                 //_appShell.CheckIfValidToken();
             }

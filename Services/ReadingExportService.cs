@@ -742,24 +742,18 @@ namespace SampleMauiMvvmApp.Services
             }
             try
             {
-                //Get lists from APi
                 var responseSql = await _httpClient.GetAsync(SampleMauiMvvmApp.API_URL_s.Constants.GetLocation);
 
-                //Get Lists if readings 
                 var locationsList = await dbContext.Database.Table<BillingLocation>().ToListAsync();
 
-
-                //Readings by Customer Number's
                 var existingLocationNo = locationsList
                        .Select(r => r.Location)
                        .ToList();
 
                 if (responseSql.IsSuccessStatusCode)
                 {
-                    // Read the response content as a string
                     var responseContent = await responseSql.Content.ReadAsStringAsync();
 
-                    // Deserialize the response content into the List<Customer>
                     var newApiLocations = JsonConvert.DeserializeObject<List<BillingLocation>>(responseContent);
 
 

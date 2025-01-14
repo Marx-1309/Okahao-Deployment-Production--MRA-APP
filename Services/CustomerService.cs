@@ -142,42 +142,31 @@ namespace SampleMauiMvvmApp.Services
                     // 1. Retrieve the list of customers & readings from SQL Server and compare to get a list of customers that have existing readings in SQL..
                     var response = await _httpClient.GetAsync(SampleMauiMvvmApp.API_URL_s.Constants.GetCustomer);
 
-                    // Construct the URL with the query parameter
                     string baseUrl = SampleMauiMvvmApp.API_URL_s.Constants.GetReading; // e.g., "https://localhost:7231/api/Reading"
                     string requestUrl = $"{baseUrl}?billingSite={Uri.EscapeDataString(userSite)}";
 
-                    // Make the HTTP GET request
                     var response2 = await _httpClient.GetAsync(requestUrl);
 
 
                     if (response.IsSuccessStatusCode)
                     {
-                        // Read the response content as a string
                         var responseContent = await response.Content.ReadAsStringAsync();
                         var responseContent2 = await response2.Content.ReadAsStringAsync();
 
-
-                        // Deserialize the response content into the List<Customer>
                         var sqlServerCustomerList = JsonConvert.DeserializeObject<List<Customer>>(responseContent);
                         var sqlServerReadingsList = JsonConvert.DeserializeObject<List<Reading>>(responseContent2);
 
-
-
-                        //  Identify the IDs of new customers that match those in sqlServerReadingsList
                         var matchingCustomerIDs = sqlServerCustomerList
                             .Where(customer => sqlServerReadingsList.Any(reading => reading.CUSTOMER_NUMBER == customer.CUSTNMBR))
                             .Select(customer => customer.CUSTNMBR)
                             .ToList();
 
-                        //  Filter and insert only new customers from the API whose IDs match
                         var newCustomersToInsert = sqlServerCustomerList
                             .Where(customer => matchingCustomerIDs.Contains(customer.CUSTNMBR))
                             .ToList();
 
-                        //  Fetch the list of customers from the SQLite database
                         var sqliteCustomerList = await dbContext.Database.Table<Customer>().Where(c => c.CUSTNMBR != null).ToListAsync();
 
-                        //  Filter out new customers that already exist in SQLite
                         var newCustomersNotInSQLite = newCustomersToInsert
                             .Where(customer => !sqliteCustomerList.Any(sqliteCustomer => sqliteCustomer.CUSTNMBR == customer.CUSTNMBR))
                             .ToList();
@@ -185,34 +174,25 @@ namespace SampleMauiMvvmApp.Services
 
                         if (newCustomersNotInSQLite.Count > 0)
                         {
-                            //  Add new customers to the SQLite database
                             await dbContext.Database.InsertAllAsync(newCustomersNotInSQLite);
                             //await _readingService.GetListOfPrevMonthReadingFromSql();
                         }
                         else { return null; }
 
-
-
-
-                        // Update the CustomerList with the combined list
                         CustomerList = sqliteCustomerList.Concat(newCustomersNotInSQLite).ToList();
 
                         return CustomerList;
                     }
                     else
                     {
-                        // Handle unsuccessful response, maybe throw an exception or log an error
                         StatusMessage = $"Failed: {response.StatusCode}";
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Handle any other exception that might occur during the API call or database operation
                     StatusMessage = $"Error: {ex.Message}";
                 }
             }
-
-            // Return the CustomerList, even if it's null (client code should handle this)
             return CustomerList;
         }
 

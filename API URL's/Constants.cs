@@ -3,7 +3,7 @@ namespace SampleMauiMvvmApp.API_URL_s
 {
     public static class Constants
     {
-        public const string HOST = ListOfUrl.OkahaoTCStaff;
+        public const string HOST = ListOfUrl.WindhoekHome;
         //Month
         public const string GetMonth = HOST+"/api/Month";
         public const string PostMonth = HOST + "/api/Month";
@@ -68,6 +68,7 @@ namespace SampleMauiMvvmApp.API_URL_s
         public const string DebugApi = "http://192.168.178.41:81";
         public const string OmusatiRC = "http://192.168.178.128:86";
         public const string Localhost = "https://localhost:7231";
+        public const string WindhoekHome = "http://192.168.188.115";
 
 
 

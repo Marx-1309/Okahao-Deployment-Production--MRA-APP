@@ -15,7 +15,7 @@
         {
             await Task.Delay(1000);
             IsBusy = true;
-            //Retrieve Token from internal Secure Storage
+
             var token = await SecureStorage.GetAsync("Token");
             if (string.IsNullOrEmpty(token)) 
             {
@@ -44,8 +44,6 @@
                     await GoToMainPage();
                 }
             }
-            
-            //Evaluate Token if token isValid
         }
 
 
@@ -54,9 +52,9 @@
         {
             await Task.Delay(1000);
             IsBusy = true;
-            //Retrieve Token from internal Secure Storage
+
             var token = await SecureStorage.GetAsync("Token");
-            //temp code
+           
             SecureStorage.Remove("Token");
             Preferences.Default.Clear();
 

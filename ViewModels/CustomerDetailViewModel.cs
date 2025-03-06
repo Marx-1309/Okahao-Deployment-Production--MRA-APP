@@ -278,12 +278,9 @@ namespace SampleMauiMvvmApp.ViewModels
 
             var fileInfo = new FileInfo(result?.Path);
             var fileLength = fileInfo.Length;
-
-            // Convert the image to Base64 string
             byte[] imageData = File.ReadAllBytes(result?.Path);
             string base64Image = Convert.ToBase64String(imageData);
 
-            // Save the data to the database
             var latestExportItem = await dbContext.Database.Table<ReadingExport>()
                        .OrderByDescending(r => r.WaterReadingExportID)
                        .FirstOrDefaultAsync();
@@ -429,7 +426,6 @@ namespace SampleMauiMvvmApp.ViewModels
 
             bool hasLocation = false;
 
-            // Check initial condition
             if (cstObj != null)
             {
                 if (cstObj.AREA != null)
@@ -442,7 +438,6 @@ namespace SampleMauiMvvmApp.ViewModels
                                 cstObj.AREA.Equals("NULL", StringComparison.OrdinalIgnoreCase));
             }
 
-            // Keep prompting until a valid location is entered
             while (!hasLocation)
             {
                 var userLocation = await Shell.Current.DisplayActionSheet(

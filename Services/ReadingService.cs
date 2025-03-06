@@ -421,9 +421,6 @@ namespace SampleMauiMvvmApp.Services
                 }
                 else
                 {
-                    // Handle the case when currentMonth is null (e.g., if it's not found)
-                    // You might return null or throw an exception based on your requirements.
-                    // For example:
                     throw new Exception("Could not retrieve current month ID.");
                 }
             }
@@ -479,7 +476,6 @@ namespace SampleMauiMvvmApp.Services
 
                         if (response.Count > 0)
                         {
-                            // Initialize a count variable to keep track of the number of items processed.
                             int itemCount = 0;
                             var iii = await dbContext.Database.Table<ReadingExport>().ToListAsync();
                             foreach (var item in response)
@@ -498,12 +494,10 @@ namespace SampleMauiMvvmApp.Services
  
                                 item.Comment = item.Comment;
 
-                                // Perform the update for each item in 'response'.
                                 var IsSyncSuccess = await _httpClient.PutAsJsonAsync(Constants.PutReading, item);
                                 StatusMessage = IsSyncSuccess.RequestMessage.ToString();
                                 if (IsSyncSuccess.IsSuccessStatusCode)
                                 {
-                                    // Update the item in the local database.
                                     var updatedItem = await dbContext.Database.Table<Reading>()
                                         .Where(r => r.WaterReadingExportDataID == item.WaterReadingExportDataID)
                                         .FirstOrDefaultAsync();
@@ -520,11 +514,10 @@ namespace SampleMauiMvvmApp.Services
                                         }
 
                                             updatedItem.ReadingSync = true;
-                                        // Save the changes to the local database.
+
                                         await dbContext.Database.UpdateAsync(updatedItem);
                                     }
 
-                                    // Increment the count for each successfully processed item.
                                     itemCount++;
                                 }
                                 else
@@ -534,14 +527,12 @@ namespace SampleMauiMvvmApp.Services
                                 }
                             }
 
-                            //Check if there are any existing images
                             List<ReadingMedia> readingMedias = new();
                             readingMedias = await dbContext.Database.Table<ReadingMedia>().ToListAsync();
                             if (readingMedias.Any())
                             {
                                 await SyncImages();
                             }
-                            // After processing asyncImageCountll items, store the count in the static variable.
                             allReadingsItemsByCount = itemCount;
                             await Shell.Current.DisplayAlert($"{allReadingsItemsByCount} Reading(s) Synced ", "Successfully", "OK");
                             await Shell.Current.DisplayAlert($"{readingMedias.Count} Image(s) Synced ", "Successfully", "OK");
@@ -558,8 +549,6 @@ namespace SampleMauiMvvmApp.Services
             {
                 StatusMessage = ex.Message.ToString();
             }
-
-            // Return the default value of allItemsByCount if no items are processed.
             return allReadingsItemsByCount;
         }
 
@@ -583,7 +572,6 @@ namespace SampleMauiMvvmApp.Services
 
                 if (response.Count > 0)
                 {
-                    // Initialize a count variable to keep track of the number of items processed.
                     int itemCount = 0;
 
                     foreach (var item in response)
@@ -593,7 +581,6 @@ namespace SampleMauiMvvmApp.Services
 
                         if (IsSyncSuccess.IsSuccessStatusCode)
                         {
-                            // Update the item in the local database.
                             var updatedItem = await dbContext.Database.Table<ReadingMedia>()
                                 .Where(r => r.WaterReadingExportDataId == item.WaterReadingExportDataId)
                                 .FirstOrDefaultAsync();
@@ -602,18 +589,14 @@ namespace SampleMauiMvvmApp.Services
                             if (updatedItem != null)
                             {
                                 updatedItem.IsSynced = true;
-
-                                // Save the changes to the local database.
                                 await dbContext.Database.UpdateAsync(updatedItem);
                             }
 
-                            // Increment the count for each successfully processed item.
                             itemCount++;
                         }
                         else
                         {
                             StatusMessage = IsSyncSuccess.IsSuccessStatusCode.ToString();
-                            // Handle any failure cases here, if needed.
                         }
                     }
                     var imagesToDelete = await dbContext.Database.Table<ReadingMedia>().Where(i => i.IsSynced == true).ToListAsync();
@@ -623,7 +606,6 @@ namespace SampleMauiMvvmApp.Services
                         await dbContext.Database.DeleteAsync(i);
                     }
 
-                    // After processing all items, store the count in the static variable.
                     allImageItemsByCount = itemCount;
                     return allImageItemsByCount;
                 }
@@ -711,25 +693,20 @@ namespace SampleMauiMvvmApp.Services
                     var readingsCount = await dbContext.Database.Table<Reading>().Where(c => c.WaterReadingExportDataID >= 1).ToListAsync();
                     if (readingsCount.Count > 0)
                     {
-                        // Retrieve all the IDs of the existing Reading items in the SQLite database
                         var existingIds = readingsCount.Select(r => r.WaterReadingExportDataID).ToList();
 
                         var response = await _httpClient.GetAsync(SampleMauiMvvmApp.API_URL_s.Constants.GetWaterReadingExportDataID);
 
                         if (response.IsSuccessStatusCode)
                         {
-                            // Read and deserialize the response to a List<Reading>
                             var newReadings = await response.Content.ReadFromJsonAsync<List<Reading>>();
 
-                            // Filter the new Reading items to get only the ones that do not exist in the SQLite database
                             var newItemsToInsert = newReadings.Where(r => !existingIds.Contains(r.WaterReadingExportDataID)).ToList();
 
                             if (newItemsToInsert.Any())
                             {
-                                // Insert the new items into the SQLite database
                                 var response2 = await dbContext.Database.InsertAllAsync(newItemsToInsert);
 
-                                // Update the readings list to include both existing items and new items
                                 foreach (var item in newItemsToInsert)
                                 {
                                     readings?.Add(item);
@@ -738,7 +715,6 @@ namespace SampleMauiMvvmApp.Services
                         }
                         else
                         {
-                            // Handle unsuccessful response, maybe throw an exception or log an error
                             StatusMessage = $"Failed :." + response.StatusCode;
                         }
                     }
@@ -748,30 +724,22 @@ namespace SampleMauiMvvmApp.Services
 
                         if (response.IsSuccessStatusCode)
                         {
-                            // Read and deserialize the response to a List<Reading>
                             readings = await response.Content.ReadFromJsonAsync<List<Reading>>();
-
-                            // Insert all items into the SQLite database since there are no existing items
                             var response2 = await dbContext.Database.InsertAllAsync(readings);
                         }
                         else
                         {
-                            // Handle unsuccessful response, maybe throw an exception or log an error
                             StatusMessage = $"Failed :." + response.StatusCode;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Handle any other exception that might occur during the API call
                     StatusMessage = $"Error." + ex.Message;
                 }
-            
 
-            // Use AutoMapper to map the Reading objects to ReadingDto objects
             var readingDtos = _mapper.Map<List<ReadingDto>>(readings);
 
-            // Return the ReadingDto list, even if it's null (client code should handle this)
             return readingDtos;
         }
         #endregion
@@ -858,13 +826,10 @@ namespace SampleMauiMvvmApp.Services
                 var lastItem = await dbContext.Database.Table<ReadingExport>()
                     .OrderByDescending(r => r.WaterReadingExportID)
                     .FirstOrDefaultAsync();
-
-                // If the lastItem is not null, return its ID; otherwise, return null.
                 return lastItem?.WaterReadingExportID;
             }
             catch (Exception ex)
             {
-                // Handle any exceptions that might occur during the database operation
                 StatusMessage = $"Error: {ex.Message}";
                 return null;
             }
@@ -878,12 +843,10 @@ namespace SampleMauiMvvmApp.Services
                     .OrderByDescending(r => r.MonthID)
                     .FirstOrDefaultAsync();
 
-                // If the lastItem is not null, return its ID; otherwise, return null.
                 return lastItem?.MonthID;
             }
             catch (Exception ex)
             {
-                // Handle any exceptions that might occur during the database operation
                 StatusMessage = $"Error: {ex.Message}";
                 return null;
             }
@@ -897,12 +860,10 @@ namespace SampleMauiMvvmApp.Services
                     .OrderByDescending(r => r.Year)
                     .FirstOrDefaultAsync();
 
-                // If the lastItem is not null, return its Year; otherwise, return null.
                 return lastItem?.Year;
             }
             catch (Exception ex)
             {
-                // Handle any exceptions that might occur during the database operation
                 StatusMessage = $"Error: {ex.Message}";
                 return null;
             }
@@ -925,12 +886,11 @@ namespace SampleMauiMvvmApp.Services
                 var ItemID = lastExportItem.WaterReadingExportID;
                 var monthID = lastExportMonth.MonthID;
                 var yearId = lastExportYear.Year;
-                // Use the 'monthID' variable as needed.
 
                 int ii = monthID - 1;
                 int xx = lastExportYear.Year;
 
-                if (ii == 0) // If current month is January, adjust to December of the previous year
+                if (ii == 0) 
                 {
                     ii = 12;
                     xx = xx - 1;
@@ -969,7 +929,6 @@ namespace SampleMauiMvvmApp.Services
                            .OrderByDescending(r => r.WaterReadingExportID)
                            .FirstOrDefaultAsync();
 
-                    // If current month is January, adjust to December of previous year
                     int prevMonthId = lastExportItem.MonthID;
                     int prevYearId = lastExportItem.Year;
                     if (prevMonthId == 0)
@@ -984,7 +943,6 @@ namespace SampleMauiMvvmApp.Services
 
                     if (readingsCount.Count < 0)
                     {
-                        // Handle unsuccessful response, maybe throw an exception or log an error
                         StatusMessage = $"Previous Readings Exist!";
                         return null;
                     }
@@ -992,20 +950,13 @@ namespace SampleMauiMvvmApp.Services
                     {
                         string userSite = Preferences.Default.Get("userSite", "");
 
-                        // Construct the URL with the query parameter
-                        string baseUrl = SampleMauiMvvmApp.API_URL_s.Constants.GetReading; // e.g., "https://localhost:7231/api/Reading"
+                        string baseUrl = SampleMauiMvvmApp.API_URL_s.Constants.GetReading; 
                         string requestUrl = $"{baseUrl}?billingSite={Uri.EscapeDataString(userSite)}";
-
-                        // Log the constructed URL for debugging purposes
-                        Console.WriteLine($"Constructed Request URL: {requestUrl}");
-
-                        // Make the HTTP GET request
                         var response = await _httpClient.GetAsync(requestUrl);
 
 
                         if (response.IsSuccessStatusCode)
                         {
-                            // Read and deserialize the response to a List<Reading>
                             var readingsFromSqlServer = await response.Content.ReadAsStringAsync();
                             //var readingsFromSqlServer = await response.Content.ReadFromJsonAsync<List<ReadingDto>>();
 
@@ -1016,7 +967,6 @@ namespace SampleMauiMvvmApp.Services
                           .FirstOrDefaultAsync();
 
                             // If current month is January, adjust to December of previous year
-                            //int prevMonthIdx = lastExportMonthItem.MonthID - 1;
                             int currentMonth = lastExportItem.MonthID;
                             int prevYearIdx = lastExportItemx.Year;
                             if (currentMonth == 0)
@@ -1077,7 +1027,6 @@ namespace SampleMauiMvvmApp.Services
                                         }
   
                                         readingsToUpdateToSqlite.Add(record);
-                                        // Update other properties as needed.
                                     }
 
                                 }
@@ -1091,21 +1040,17 @@ namespace SampleMauiMvvmApp.Services
                             {
                                 await dbContext.Database.DeleteAsync(item);
                             }
-
-                            // Insert all items into the SQLite database since there are no existing items
                             //var response2 = await dbContext.Database.InsertAllAsync(readingsFromSqlServer);
 
                         }
                         else
                         {
-                            // Handle unsuccessful response, maybe throw an exception or log an error
                             StatusMessage = $"Error :." + response.StatusCode;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Handle any other exception that might occur during the API call
                     StatusMessage = $"Error." + ex.Message;
                 }
             }
@@ -1165,7 +1110,6 @@ namespace SampleMauiMvvmApp.Services
                     loc.IsAllCaptured = false;
                     loc.IsAllNotCaptured = !loc.IsAllCaptured;
 
-                    // Add all the location to the list 
                     listOfLocations.Add(loc);
 
                     StatusMessage = "Looks like all the locations are captured!";
@@ -1195,14 +1139,10 @@ namespace SampleMauiMvvmApp.Services
                 string baseUrl = SampleMauiMvvmApp.API_URL_s.Constants.GetReading; // e.g., "https://localhost:7231/api/Reading"
                 string requestUrl = $"{baseUrl}?billingSite={Uri.EscapeDataString(userSite)}";
 
-                //Get lists from APi
                 var responseSql = await _httpClient.GetAsync(requestUrl);
 
-                //Get Lists if readings 
                 var readingList = await dbContext.Database.Table<Reading>().ToListAsync();
 
-
-                //Readings by Customer Number's
                 var existingCustomerNo = readingList
                        .Select(r => r.CUSTOMER_NUMBER)
                        .ToList();
@@ -1212,8 +1152,6 @@ namespace SampleMauiMvvmApp.Services
                            .OrderByDescending(r => r.WaterReadingExportID)
                            .FirstOrDefaultAsync();
 
-
-                // If current month is January, adjust to December of previous year
                 int currentExportId = latestExportItem.WaterReadingExportID;
                 int currentMonthId = latestExportItem.MonthID;
                 int currentYearId = latestExportItem.Year;
@@ -1226,10 +1164,7 @@ namespace SampleMauiMvvmApp.Services
 
                 if (responseSql.IsSuccessStatusCode)
                 {
-                    // Read the response content as a string
                     var responseContent = await responseSql.Content.ReadAsStringAsync();
-
-                    // Deserialize the response content into the List<Customer>
                     var newApiReadings = JsonConvert.DeserializeObject<List<Reading>>(responseContent);
 
 

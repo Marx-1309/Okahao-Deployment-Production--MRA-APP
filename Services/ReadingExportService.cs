@@ -60,10 +60,7 @@ namespace SampleMauiMvvmApp.Services
                            .ToList();
                 if (responseSql.IsSuccessStatusCode)
                 {
-                    // Read and deserialize the response to a List<ReadingExport>
                     var newReadingExports = await responseSql.Content.ReadFromJsonAsync<List<ReadingExport>>();
-
-                    // Filter the new ReadingExport items to get only the ones that do not exist in the SQLite database
                     var newItemsToInsert = newReadingExports
                         .Where(r => !existingIds.Contains(r.WaterReadingExportID))
                         .ToList();
@@ -73,7 +70,6 @@ namespace SampleMauiMvvmApp.Services
                     {
                         latestExport.Clear();
                         latestExport.AddRange(newItemsToInsert);
-                        // Insert the new items into the SQLite database
                         //var response2 = await dbContext.Database.InsertAllAsync(newItemsToInsert);
 
                         foreach (var item in latestExport)
@@ -90,45 +86,36 @@ namespace SampleMauiMvvmApp.Services
                         }
                     }
 
-                    //Download the customers that do not exist in sqlite database
                     var customerInSqlite = await dbContext.Database.Table<Customer>().ToListAsync();
                     var customerFromSqlServer = await _httpClient.GetAsync(SampleMauiMvvmApp.API_URL_s.Constants.GetCustomer);
 
                     if (customerFromSqlServer.IsSuccessStatusCode)
                     {
-                        // Read the response content as a string
                         var responseContent = await customerFromSqlServer.Content.ReadAsStringAsync();
-                        // Deserialize the response content into the List<Customer>
                         var sqlServerCustomerList = JsonConvert.DeserializeObject<List<Customer>>(responseContent);
                         var sqliteReadingsList = await dbContext.Database.Table<Reading>().ToListAsync();
 
-
-                        //  Identify the IDs of new customers that match those in sqlServerReadingsList
                         var matchingCustomerIDs = sqlServerCustomerList
                             .Where(customer => sqliteReadingsList.Any(reading => reading.CUSTOMER_NUMBER == customer.CUSTNMBR))
                             .Select(customer => customer.CUSTNMBR)
                             .ToList();
-
-                        //  Filter and insert only new customers from the API whose IDs match
                         var newCustomersToInsert = sqlServerCustomerList
                             .Where(customer => matchingCustomerIDs.Contains(customer.CUSTNMBR))
                             .ToList();
 
-                        //  Fetch the list of customers from the SQLite database
+
                         var sqliteCustomerList = await dbContext.Database.Table<Customer>().Where(c => c.CUSTNMBR != null).ToListAsync();
 
-                        //  Filter out new customers that already exist in SQLite
+
                         var newCustomersNotInSQLite = newCustomersToInsert
                             .Where(customer => !sqliteCustomerList.Any(sqliteCustomer => sqliteCustomer.CUSTNMBR == customer.CUSTNMBR))
                             .ToList();
 
                         if (newCustomersNotInSQLite.Count > 0)
                         {
-                            //  Add new customers to the SQLite database
+ 
                             await dbContext.Database.InsertAllAsync(newCustomersNotInSQLite);
                         }
-
-                        // Update the CustomerList with the combined list
                         //CustomerList = sqliteCustomerList.Concat(newCustomersNotInSQLite).ToList();
                     }
 
@@ -148,8 +135,6 @@ namespace SampleMauiMvvmApp.Services
         #endregion
 
 
-
-        // Initialize the lists
         List<ReadingExport> LatestExportList { get; set; } = new();
         List<Customer> LatestCustomerList { get; set; } = new();
         List<Reading> LatestReadingList { get; set; } = new();
@@ -166,28 +151,23 @@ namespace SampleMauiMvvmApp.Services
                             $"Please check internet and try again.", "OK");
                         return;
                     }
-                    //Get lists from APi
+
                     var responseSql1 = await _httpClient.GetAsync(SampleMauiMvvmApp.API_URL_s.Constants.ReadingExport);
                     var responseSql2 = await _httpClient.GetAsync(SampleMauiMvvmApp.API_URL_s.Constants.GetCustomer);
                     var responseSql3 = await _httpClient.GetAsync(SampleMauiMvvmApp.API_URL_s.Constants.GetReading);
 
-                    //Get Lists
                     var exportsList = await dbContext.Database.Table<ReadingExport>().ToListAsync();
                     var customerList = await dbContext.Database.Table<Customer>().ToListAsync();
                     var readingList = await dbContext.Database.Table<Reading>().ToListAsync();
 
-                    //Get Existing Id's from Sqlite 
-                    //Exports
                     var existingExportIds = exportsList
                            .Select(r => r.WaterReadingExportID)
                            .ToList();
 
-                    //Customers
                     var existingCustomerIds = customerList
                            .Select(r => r.CUSTNMBR)
                            .ToList();
 
-                    //Readings
                     var existingReadingIds = readingList
                            .Select(r => r.WaterReadingExportDataID)
                            .ToList();
@@ -198,23 +178,16 @@ namespace SampleMauiMvvmApp.Services
 
                     if (responseSql1.IsSuccessStatusCode && responseSql2.IsSuccessStatusCode && responseSql3.IsSuccessStatusCode)
                     {
-                        // Read the response content as a string
                         var responseContent1 = await responseSql1.Content.ReadAsStringAsync();
                         var responseContent2 = await responseSql2.Content.ReadAsStringAsync();
                         var responseContent3 = await responseSql3.Content.ReadAsStringAsync();
 
-                        // Deserialize the response content into the List<Customer>
                         var newApiReadingExports = JsonConvert.DeserializeObject<List<ReadingExport>>(responseContent1);
                         var newApiCustomers = JsonConvert.DeserializeObject<List<Customer>>(responseContent2);
                         var newApiReadings = JsonConvert.DeserializeObject<List<Reading>>(responseContent3);
 
-
-                        //ensuring that r.WaterReadingExportID is greater than the WaterReadingExportID of currentExportItem.
-                        //This means that only items with an WaterReadingExportID greater than the current one will be included in the newExportToInsert list.
-
                         ReadingExport currentExportItem = await dbContext.Database.Table<ReadingExport>().FirstOrDefaultAsync();
 
-                        // Filter the items to get only the ones that do not exist in the SQLite database
                         var newExportToInsert = newApiReadingExports
                             .Where(r => !existingExportIds.Contains(r.WaterReadingExportID) && r.WaterReadingExportID > currentExportItem?.WaterReadingExportID)
                             .ToList();
@@ -223,11 +196,8 @@ namespace SampleMauiMvvmApp.Services
                         var newCustomers = newApiCustomers
                             .Where(r => !existingCustomerIds.Contains(r.CUSTNMBR))
                             .ToList();
-                        //Firstly i filtered out the new customers that do not exist in the customer's table 
-                        //Here filter out the new customers from the APi that do have existing readings in the readings table and save them
-                        var newCustomersToInsert = newCustomers.Where(r => existingCustomerReadingIds.Contains(r.CUSTNMBR)).ToList();
-                        //Here check if the newCustomerToInsert have an existing reading in Readings from the API (use customerNumber)
 
+                        var newCustomersToInsert = newCustomers.Where(r => existingCustomerReadingIds.Contains(r.CUSTNMBR)).ToList();
 
                         var newReadingToInsert = newApiReadings
                             .Where(r => !existingReadingIds.Contains(r.WaterReadingExportDataID))
@@ -237,7 +207,6 @@ namespace SampleMauiMvvmApp.Services
                             .Where(r => existingReadingIds.Contains(r.WaterReadingExportDataID))
                             .ToList();
 
-                        //Insert Non-Existing Exports
                         if (newExportToInsert.Any())
                         {
                             await Shell.Current.DisplayAlert("New Reading Exports Found!", $"We Are Updating The App!", "OK");
@@ -261,8 +230,6 @@ namespace SampleMauiMvvmApp.Services
 
                             LatestExportList.Clear();
                             LatestExportList.AddRange(newExportToInsert);
-                            // Insert the new items into the SQLite database
-                            //var response2 = await dbContext.Database.InsertAllAsync(newItemsToInsert);
 
                             foreach (var item in LatestExportList)
                             {
@@ -277,14 +244,10 @@ namespace SampleMauiMvvmApp.Services
                                 await dbContext.Database.InsertAsync(readingExport);
                             }
 
-                            //Insert Non-Existing Customers
                             if (newCustomersToInsert.Any())
                             {
                                 LatestCustomerList.Clear();
                                 LatestCustomerList.AddRange(newCustomersToInsert);
-                                // Insert the new items into the SQLite database
-                                //var response2 = await dbContext.Database.InsertAllAsync(newItemsToInsert);
-
 
                                 List<Customer> CustomerList = new();
                                 foreach (var item in newCustomersToInsert)
@@ -304,17 +267,14 @@ namespace SampleMauiMvvmApp.Services
                                 await dbContext.Database.InsertAllAsync(CustomerList);
                             }
 
-                            //Insert Non-Existing Readings
                             if (newReadingToInsert.Any())
                             {
-                                // Clear the existing LatestReadingList and add the new readings
+
                                 LatestReadingList.Clear();
                                 LatestReadingList.AddRange(newReadingToInsert);
 
-                                // Create a list to store Reading objects
                                 List<Reading> ReadingList = new List<Reading>();
 
-                                // Loop through newReadingToInsert and create Reading objects
                                 foreach (var item in newReadingToInsert)
                                 {
                                     Reading reading = new Reading
@@ -322,41 +282,34 @@ namespace SampleMauiMvvmApp.Services
                                         WaterReadingExportDataID = item.WaterReadingExportDataID,
                                         CURRENT_READING = item.CURRENT_READING,
                                         PREVIOUS_READING = item.PREVIOUS_READING,
-                                        Comment = item.Comment, // Set Comment from item if available
-                                        ReadingDate = item.ReadingDate, // Set READING_DATE from item if available
+                                        Comment = item.Comment, 
+                                        ReadingDate = item.ReadingDate, 
                                         MonthID = item.MonthID,
                                         Year = item.Year
                                     };
 
-                                    ReadingList.Add(reading); // Add each reading to the list
+                                    ReadingList.Add(reading); 
                                 }
 
-                                // Insert the list of readings into the SQLite database
                                 await dbContext.Database.InsertAllAsync(ReadingList);
                             }
 
-
-                            //Update Existing Readings
-                            // Update Existing Readings
                             if (newReadingToUpdate.Any())
                             {
                                 List<Reading> ReadingList = new List<Reading>();
 
-                                //Get the latest export items to assign  to readings during update
                                 var lastExportItem = await dbContext.Database.Table<ReadingExport>()
                                           .OrderByDescending(r => r.WaterReadingExportID)
                                           .FirstOrDefaultAsync();
 
                                 foreach (var item in newReadingToUpdate)
                                 {
-                                    // Retrieve the record to update
                                     Reading recordToUpdate = await dbContext.Database.Table<Reading>()
                                         .Where(r => r.WaterReadingExportDataID == item.WaterReadingExportDataID)
                                         .FirstOrDefaultAsync();
 
                                     if (recordToUpdate != null)
                                     {
-                                        // Update the properties of the record
                                         recordToUpdate.WaterReadingExportID = lastExportItem.WaterReadingExportID;
                                         recordToUpdate.CUSTOMER_NUMBER = item.CUSTOMER_NUMBER;
                                         recordToUpdate.CUSTOMER_NAME = item.CUSTOMER_NAME;
@@ -378,8 +331,6 @@ namespace SampleMauiMvvmApp.Services
                                         ReadingList.Add(recordToUpdate);
                                     }
                                 }
-
-                                // Update the records in the database
                                 await dbContext.Database.UpdateAllAsync(ReadingList);
                                 await Shell.Current.DisplayAlert("Done!", $"finished downloading new data!", "OK");
                                 Page pg = await Shell.Current.Navigation.PopAsync();
@@ -398,17 +349,14 @@ namespace SampleMauiMvvmApp.Services
                 }
                 catch (Exception ex)
                 {
-                    // Handle any other exception that might occur during the API call
                     StatusMessage = $"Error." + ex.Message;
                 }
             }
-
-            // Return the ReadingExport list, even if it's null (client code should handle this)
             return;
         }
 
 
-        List<ReadingExport> latestExport { get; set; } = new List<ReadingExport>(); // Initialize the list
+        List<ReadingExport> latestExport { get; set; } = new List<ReadingExport>(); 
 
         public async Task<List<ReadingExport>> CheckForNewExportInSql()
         {
@@ -429,19 +377,14 @@ namespace SampleMauiMvvmApp.Services
 
                     if (responseSql1.IsSuccessStatusCode)
                     {
-                        // Read the response content as a string
                         var responseContent1 = await responseSql1.Content.ReadAsStringAsync();
 
 
-                        // Deserialize the response content into the List<Customer>
                         var newApiReadingExports = JsonConvert.DeserializeObject<List<ReadingExport>>(responseContent1);
 
-
-                        // Filter the items to get only the ones that do not exist in the SQLite database
                         var newExportToInsert = newApiReadingExports.ToList();
 
 
-                        //Insert Non-Existing Exports
                         if (newExportToInsert.Any())
                         {
                             LatestExportList.Clear();
@@ -470,13 +413,10 @@ namespace SampleMauiMvvmApp.Services
                 }
                 catch (Exception ex)
                 {
-                    // Handle any other exception that might occur during the API call
                     StatusMessage = $"Error." + ex.Message;
                 }
 
             }
-
-            // Return the ReadingExport list, even if it's null (client code should handle this)
             return LatestExportList;
         }
 
@@ -545,8 +485,6 @@ namespace SampleMauiMvvmApp.Services
                .OrderByDescending(r => r.WaterReadingExportID)
                .FirstOrDefaultAsync();
 
-
-                // If current month is January, adjust to December of previous year
                 int currentExportId = latestExportItem.WaterReadingExportID;
                 int currentMonthId = latestExportItem.MonthID;
                 int currentYearId = latestExportItem.Year;
@@ -647,7 +585,6 @@ namespace SampleMauiMvvmApp.Services
 
             if (readingsCount.Count > 0)
             {
-                // Retrieve all the IDs of the existing ReadingExport items in the SQLite database
                 var existingIds = readingsCount
                     .Select(r => r.WaterReadingExportID)
                     .ToList();
@@ -656,10 +593,7 @@ namespace SampleMauiMvvmApp.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // Read and deserialize the response to a List<ReadingExport>
                     var newReadingExports = await response.Content.ReadFromJsonAsync<List<ReadingExport>>();
-
-                    // Filter the new ReadingExport items to get only the ones that do not exist in the SQLite database
                     var newItemsToInsert = newReadingExports
                         .Where(r => !existingIds.Contains(r.WaterReadingExportID))
                         .ToList();
@@ -668,7 +602,6 @@ namespace SampleMauiMvvmApp.Services
                     {
                         latestExport.Clear();
                         latestExport.AddRange(newItemsToInsert);
-                        // Insert the new items into the SQLite database
                         //var response2 = await dbContext.Database.InsertAllAsync(newItemsToInsert);
 
                         foreach (var item in latestExport)
@@ -706,7 +639,6 @@ namespace SampleMauiMvvmApp.Services
                    .OrderByDescending(r => r.Year)
                    .FirstOrDefaultAsync();
 
-            // If current month is January, adjust to December of previous year
             int currentExportId = latestExportItem.WaterReadingExportID;
             int currentMonthId = latestExportMonthItem.MonthID;
             int currentYearId = latestExportYearItem.Year;
@@ -730,7 +662,6 @@ namespace SampleMauiMvvmApp.Services
         {
             await Shell.Current.GoToAsync("../..");
         }
-        //End of function 
 
         public async Task<List<Reading>> ScanNewLocationsFromSql()
         {

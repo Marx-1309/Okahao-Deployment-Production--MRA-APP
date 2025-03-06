@@ -53,7 +53,7 @@ namespace SampleMauiMvvmApp.ViewModels
         [RelayCommand]
         async Task GetCapturedReadings()
         {
-            if (IsBusy) return; // Return an empty list if already busy
+            if (IsBusy) return;
 
             try
             {
@@ -61,7 +61,7 @@ namespace SampleMauiMvvmApp.ViewModels
                 var listOfCapturedReadings = await readingService.GetAllCapturedReadings();
                 if (listOfCapturedReadings != null && listOfCapturedReadings.Count > 0)
                 {
-                    AllReadings.Clear(); // Clear the list before adding readings
+                    AllReadings.Clear(); 
                     foreach (var reading in listOfCapturedReadings)
                     {
                         var IsFlagged = IsReadingFlagged((decimal)reading.PREVIOUS_READING,reading.CURRENT_READING);
@@ -80,7 +80,7 @@ namespace SampleMauiMvvmApp.ViewModels
                             reading.ReadingNotTaken = true;
                         }
                         Task.Delay(50);
-                        AllReadings.Add(reading); // Add each reading to the list
+                        AllReadings.Add(reading); 
 
                     }
                     //foreach (var reading in listOfCapturedReadings)
@@ -95,7 +95,7 @@ namespace SampleMauiMvvmApp.ViewModels
                     .Where(r => r != null && (r.CURRENT_READING - r.PREVIOUS_READING) > 20)
                     .Count();
                     ZeroReadingsCount = listOfCapturedReadings.Where(r => r?.CURRENT_READING == r.PREVIOUS_READING).Count();
-                    // Set IsBusy to false after adding all readings
+                    
                     CapturedTitle = $"Captured readings : {CapturedReadingsCount} , Zero readings : {ZeroReadingsCount} , Abnormal readings : {AbnormalCount}";
 
 
@@ -112,7 +112,7 @@ namespace SampleMauiMvvmApp.ViewModels
             }
             finally
             {
-                IsBusy = false; // Ensure IsBusy is set to false in case of any exception or no readings found
+                IsBusy = false; 
                 IsRefreshing = false;
             }
             isRefreshing = false;
@@ -124,7 +124,7 @@ namespace SampleMauiMvvmApp.ViewModels
         [RelayCommand]
         async Task GetUncapturedReadings()
         {
-            if (IsBusy) return; // Return an empty list if already busy
+            if (IsBusy) return; 
 
             try
             {
@@ -132,7 +132,7 @@ namespace SampleMauiMvvmApp.ViewModels
                 var listOfUnCapturedReadings = await readingService.GetAllUncapturedReadings();
                 if (listOfUnCapturedReadings != null && listOfUnCapturedReadings.Count > 0)
                 {
-                    AllReadings.Clear(); // Clear the list before adding readings
+                    AllReadings.Clear(); 
           
                     foreach (var reading in listOfUnCapturedReadings)
                     {
@@ -147,7 +147,7 @@ namespace SampleMauiMvvmApp.ViewModels
                             reading.ReadingNotTaken = true;
                         }
                         Task.Delay(500);
-                        AllReadings.Add(reading); // Add each reading to the list
+                        AllReadings.Add(reading); 
 
                     }
                   
@@ -176,7 +176,7 @@ namespace SampleMauiMvvmApp.ViewModels
             }
             finally
             {
-                IsBusy = false; // Ensure IsBusy is set to false in case of any exception or no readings found
+                IsBusy = false; 
                 IsRefreshing = false;
             }
 
@@ -268,8 +268,6 @@ namespace SampleMauiMvvmApp.ViewModels
         [RelayCommand]
         async Task GetLocations()
         {
-            //if (IsBusy) return; // Return an empty list if already busy
-
             try
             {
                 IsBusy = true;
@@ -278,7 +276,7 @@ namespace SampleMauiMvvmApp.ViewModels
                 if (listOfLocations != null && listOfLocations.Count > 0)
                 {
 
-                    AllLocation.Clear(); // Clear the list before adding readings
+                    AllLocation.Clear(); 
 
                     foreach (var location in listOfLocations)
                     {
@@ -297,8 +295,6 @@ namespace SampleMauiMvvmApp.ViewModels
                     Task.Delay(50);
                     LocationListForSearch.AddRange(listOfLocations);
 
-                    // Set IsBusy to false after adding all readings
-
                 }
                 else
                 {
@@ -311,7 +307,7 @@ namespace SampleMauiMvvmApp.ViewModels
             }
             finally
             {
-                IsBusy = false; // Ensure IsBusy is set to false in case of any exception or no readings found
+                IsBusy = false; 
                 IsRefreshing = false;
             }
         }
@@ -319,7 +315,6 @@ namespace SampleMauiMvvmApp.ViewModels
         [RelayCommand]
         public async Task GoToListOfUncapturedReadingsByArea(LocationReadings area)
         {
-            //if (IsBusy) return; // Return an empty list if already busy
             try
             {
                 IsBusy = true;

@@ -27,8 +27,6 @@ namespace SampleMauiMvvmApp.Push_Notifications
             var Mnth = Month.Split(',')[1].Split().ToString();
 
             string currentMonth = string.Empty;
-
-            //Notification request params 
             
         }
     }

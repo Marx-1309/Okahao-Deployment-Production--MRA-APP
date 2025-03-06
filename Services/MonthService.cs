@@ -33,8 +33,7 @@ namespace SampleMauiMvvmApp.Services
                 }
                 catch (Exception ex)
                 {
-                    // Handle deserialization error
-                    Console.WriteLine("Deserialization error: " + ex.Message);
+
                 }
             }
             return MonthList;
@@ -56,7 +55,7 @@ namespace SampleMauiMvvmApp.Services
             }
             else
             {
-                return null; // Month not found
+                return null; 
             }
         }
 
@@ -120,19 +119,16 @@ namespace SampleMauiMvvmApp.Services
                         {
                             var newMonths = await response.Content.ReadFromJsonAsync<List<Month>>();
 
-                            // Delete records from SQLite that don't exist in the API response
                             var idsToDelete = existingIds.Except(newMonths.Select(m => m.MonthID)).ToList();
+
                             await dbContext.Database.Table<Month>().DeleteAsync(m => idsToDelete.Contains(m.MonthID));
 
-                            // Filter the new Month items to get only the ones that do not exist in the SQLite database
                             var newItemsToInsert = newMonths.Where(m => !existingIds.Contains(m.MonthID)).ToList();
 
                             if (newItemsToInsert.Any())
                             {
-                                // Insert the new items into the SQLite database
                                 var response2 = await dbContext.Database.InsertAllAsync(newItemsToInsert);
 
-                                // Update the listMonths list to include both existing items and new items
                                 foreach (var item in newItemsToInsert)
                                 {
                                     listMonths?.Add(item);
@@ -141,7 +137,6 @@ namespace SampleMauiMvvmApp.Services
                         }
                         else
                         {
-                            // Handle unsuccessful response, maybe throw an exception or log an error
                             StatusMessage = $"Failed :." + response.StatusCode;
                         }
                     }
@@ -163,19 +158,15 @@ namespace SampleMauiMvvmApp.Services
                         }
                         else
                         {
-                            // Handle unsuccessful response, maybe throw an exception or log an error
                             StatusMessage = $"Failed :." + response.StatusCode;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Handle any other exception that might occur during the API call
                     StatusMessage = $"Error." + ex.Message;
                 }
             }
-
-            // Return the Month list, even if it's null (client code should handle this)
             return listMonths;
         }
 
@@ -185,27 +176,23 @@ namespace SampleMauiMvvmApp.Services
             {
                 var listOfMonths = await dbContext.Database.Table<Month>().ToListAsync();
 
-                // Check if the count is 0 before calling GetListOfMonthsFromSql()
                 if (listOfMonths.Count == 0)
                 {
                     await GetListOfMonthsFromSql();
                     listOfMonths = await dbContext.Database.Table<Month>().ToListAsync();
                 }
 
-                // Check again if the count is greater than 0 after calling GetListOfMonthsFromSql()
                 if (listOfMonths.Count > 0)
                 {
                     return listOfMonths;
                 }
                 else
                 {
-                    // Handle the case when both attempts to retrieve months were unsuccessful
                     StatusMessage = $"Failed to retrieve months from the database.";
                 }
             }
             catch (Exception ex)
             {
-                // Handle any other exception that might occur during the database call
                 StatusMessage = $"Error: {ex.Message}";
             }
 
@@ -221,12 +208,10 @@ namespace SampleMauiMvvmApp.Services
                     .OrderByDescending(r => r.MonthName)
                     .FirstOrDefaultAsync();
 
-                // If the lastItem is not null, return its ID; otherwise, return null.
                 return lastItem?.MonthName;
             }
             catch (Exception ex)
             {
-                // Handle any exceptions that might occur during the database operation
                 StatusMessage = $"Error: {ex.Message}";
                 return null;
             }
@@ -240,12 +225,10 @@ namespace SampleMauiMvvmApp.Services
                     .OrderByDescending(r => r.WaterReadingExportID)
                     .FirstOrDefaultAsync();
 
-                // If the lastItem is not null, return its ID; otherwise, return null.
                 return lastItem?.MonthID;
             }
             catch (Exception ex)
             {
-                // Handle any exceptions that might occur during the database operation
                 StatusMessage = $"Error: {ex.Message}";
                 return null;
             }
@@ -256,7 +239,6 @@ namespace SampleMauiMvvmApp.Services
             try
             {
                 int isWithReadings = await  dbContext.Database.Table<Reading>().Where(r=>r.MonthID == month.MonthID).CountAsync();
-                // If the lastItem is not null, return its ID; otherwise, return null.
                 if(isWithReadings>0)
                 {
                     return true;
@@ -268,7 +250,6 @@ namespace SampleMauiMvvmApp.Services
             }
             catch (Exception ex)
             {
-                // Handle any exceptions that might occur during the database operation
                 StatusMessage = $"Error: {ex.Message}";
                 return false;
             }

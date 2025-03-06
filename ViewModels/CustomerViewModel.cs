@@ -6,12 +6,9 @@
         // Then ObservableCollection<Customer> will not detect any changes of Customer's properties and UI will not be updated
         // Therefore, CustomerWrapper with ObservableObject and ObservableProperty is needed to facilitate the UI update
         //public ObservableCollection<Customer> Customers { get; set; } = new();
-
-
-        //This collection stores customer objects from  Sqlite straight. 
+ 
         public static List<Customer> CustomersListForSearch { get; private set; } = new List<Customer>();
 
-        //This collection stores customer objects from Sql Server , retrieved through Sqlite.
         public ObservableCollection<Customer> SqlCustomers { get; set; } = new();
         public BaseService baseService;
         readonly CustomerService _customerService;

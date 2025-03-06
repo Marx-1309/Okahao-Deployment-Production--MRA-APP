@@ -79,8 +79,6 @@ namespace SampleMauiMvvmApp.Services
                        .OrderByDescending(r => r.WaterReadingExportID)
                        .FirstOrDefaultAsync();
 
-
-            // If current month is January, adjust to December of previous year
             var readingExport = new ReadingExport
             {
                 WaterReadingExportID = latestExportItem.WaterReadingExportID,

@@ -35,18 +35,16 @@ namespace SampleMauiMvvmApp.ViewModels
             {
                 IsBusy = true;
                 await Task.Delay(100);
-                // Call API to attempt a login
                 var loginModel = new LoginModel(username, password);
                 var response = await authenticationService.Login(loginModel);
 
-                //Display welcome message
                 await DisplayLoginMessage(authenticationService.StatusMessage);
                 //await Shell.Current.DisplayAlert("Success", "Login was successful", "OK");
 
                 if (!string.IsNullOrEmpty(response.Token)) 
                 {
                     MauiProgram.CreateMauiApp();
-                    //Store token in secure 
+
                     await SecureStorage.SetAsync("Token",response.Token);
 
 
@@ -57,14 +55,11 @@ namespace SampleMauiMvvmApp.ViewModels
                     string userId = jsonToken.Claims.First(claim => claim.Type == "sub")?.Value;
                     string email = jsonToken.Claims.First(claim => claim.Type == "email")?.Value;
                     string userSite = jsonToken.Claims.First(claim => claim.Type == "UserSite")?.Value.Trim();
-                    // Set a string value:
+
                     Preferences.Default.Set("userId", userId);
                     Preferences.Default.Set("username", email);
                     Preferences.Default.Set("userSite", userSite);
 
-                    //You can use this to access details of the logged_in user//commented out 
-
-                    //Navigate to the app's main page
                     IsBusy = false;
                     await Shell.Current.GoToAsync($"//{nameof(MonthCustomerTabPage)}");;
                     

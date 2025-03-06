@@ -34,7 +34,6 @@ namespace SampleMauiMvvmApp.ViewModels
         {
             await Task.Delay(1000);
             IsBusy = true;
-            //Retrieve Token from internal Secure Storage
             var token = await SecureStorage.GetAsync("Token");
             if (string.IsNullOrEmpty(token)) 
             {
@@ -63,8 +62,7 @@ namespace SampleMauiMvvmApp.ViewModels
                     await GoToMainPage();
                 }
             }
-            
-            //Evaluate Token if token isValid
+
         }
 
         [RelayCommand]
